@@ -13,12 +13,14 @@ import com.google.devrel.training.conference.domain.Profile;
 import com.google.devrel.training.conference.form.ProfileForm;
 import com.google.devrel.training.conference.form.ProfileForm.TeeShirtSize;
 import com.googlecode.objectify.Key;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
 
 /**
  * Defines conference APIs.
  */
-@Api(name = "conference", version = "v1", scopes = { Constants.EMAIL_SCOPE }, clientIds = {
-        Constants.WEB_CLIENT_ID, Constants.API_EXPLORER_CLIENT_ID }, description = "API for the Conference Central Backend application.")
+@Api(name = "conference", version = "v1", scopes = { Constants.EMAIL_SCOPE }, clientIds = { Constants.WEB_CLIENT_ID,
+        Constants.API_EXPLORER_CLIENT_ID }, description = "API for the Conference Central Backend application.")
 public class ConferenceApi {
 
     /*
@@ -42,14 +44,15 @@ public class ConferenceApi {
      *             when the User object is null.
      */
 
-    @ApiMethod(name = "saveProfile", path = "profile", httpMethod = HttpMethod.POST, clientIds = {Constants.WEB_CLIENT_ID})
+    @ApiMethod(name = "saveProfile", path = "profile", httpMethod = HttpMethod.POST, clientIds = {
+            Constants.WEB_CLIENT_ID })
     public Profile saveProfile(ProfileForm profileForm, User user) throws UnauthorizedException {
 
         String userId;
         String mainEmail;
         String displayName;
         TeeShirtSize teeShirtSize;
-        if(user == null) {
+        if (user == null) {
             throw new UnauthorizedException("Forbidden");
         }
 
@@ -57,11 +60,16 @@ public class ConferenceApi {
         displayName = profileForm.getDisplayName();
         userId = user.getUserId();
         mainEmail = user.getEmail();
-        if(displayName == null || displayName.isEmpty()) {
+        if (displayName == null || displayName.isEmpty()) {
             displayName = extractDefaultDisplayNameFromEmail(mainEmail);
         }
 
-        Profile profile = new Profile(userId, displayName, mainEmail, teeShirtSize);
+        Profile profile = getProfile(user);
+        if (profile == null) {
+            profile = new Profile(userId, displayName, mainEmail, teeShirtSize);
+        } else {
+            profile.update(displayName, teeShirtSize);
+        }
 
         return profile;
     }
@@ -73,17 +81,28 @@ public class ConferenceApi {
      * @throws UnauthorizedException
      *             when the User object is null.
      */
-    @ApiMethod(name = "getProfile", path = "profile", httpMethod = HttpMethod.GET, clientIds = {Constants.WEB_CLIENT_ID})
+    @ApiMethod(name = "getProfile", path = "profile", httpMethod = HttpMethod.GET)
     public Profile getProfile(final User user) throws UnauthorizedException {
         if (user == null) {
             throw new UnauthorizedException("Authorization required");
         }
-
-        // TODO
-        // load the Profile Entity
-        String userId = ""; // TODO
-        Key key = null; // TODO
-        Profile profile = null; // TODO load the Profile entity
+        String userId = user.getUserId();
+        Key<Profile> key = Key.create(Profile.class, userId);
+        Profile profile = ofy().load().key(key).now();
         return profile;
     }
+
+    // @ApiMethod(name = "getProfile", path = "profile", httpMethod = HttpMethod.GET, clientIds = {Constants.WEB_CLIENT_ID})
+    // public Profile getProfile(final User user) throws UnauthorizedException {
+    //     if (user == null) {
+    //         throw new UnauthorizedException("Authorization required");
+    //     }
+
+    //     // TODO
+    //     // load the Profile Entity
+    //     String userId = ""; // TODO
+    //     Key key = null; // TODO
+    //     Profile profile = null; // TODO load the Profile entity
+    //     return profile;
+    // }
 }
