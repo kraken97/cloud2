@@ -58,7 +58,7 @@ conferenceApp.controllers.controller('MyProfileCtrl',
                 $scope.profile = {};
                 $scope.loading = true;
                 gapi.client.conference.getProfile().
-                    execute(function (resp) {
+                execute(function (resp) {
                         $scope.$apply(function () {
                             $scope.loading = false;
                             if (resp.error) {
@@ -89,34 +89,34 @@ conferenceApp.controllers.controller('MyProfileCtrl',
             $scope.submitted = true;
             $scope.loading = true;
             gapi.client.conference.saveProfile($scope.profile).
-                execute(function (resp) {
-                    $scope.$apply(function () {
-                        $scope.loading = false;
-                        if (resp.error) {
-                            // The request has failed.
-                            var errorMessage = resp.error.message || '';
-                            $scope.messages = 'Failed to update a profile : ' + errorMessage;
-                            $scope.alertStatus = 'warning';
-                            $log.error($scope.messages + 'Profile : ' + JSON.stringify($scope.profile));
+            execute(function (resp) {
+                $scope.$apply(function () {
+                    $scope.loading = false;
+                    if (resp.error) {
+                        // The request has failed.
+                        var errorMessage = resp.error.message || '';
+                        $scope.messages = 'Failed to update a profile : ' + errorMessage;
+                        $scope.alertStatus = 'warning';
+                        $log.error($scope.messages + 'Profile : ' + JSON.stringify($scope.profile));
 
-                            if (resp.code && resp.code == HTTP_ERRORS.UNAUTHORIZED) {
-                                oauth2Provider.showLoginModal();
-                                return;
-                            }
-                        } else {
-                            // The request has succeeded.
-                            $scope.messages = 'The profile has been updated';
-                            $scope.alertStatus = 'success';
-                            $scope.submitted = false;
-                            $scope.initialProfile = {
-                                displayName: $scope.profile.displayName,
-                                teeShirtSize: $scope.profile.teeShirtSize
-                            };
-
-                            $log.info($scope.messages + JSON.stringify(resp.result));
+                        if (resp.code && resp.code == HTTP_ERRORS.UNAUTHORIZED) {
+                            oauth2Provider.showLoginModal();
+                            return;
                         }
-                    });
+                    } else {
+                        // The request has succeeded.
+                        $scope.messages = 'The profile has been updated';
+                        $scope.alertStatus = 'success';
+                        $scope.submitted = false;
+                        $scope.initialProfile = {
+                            displayName: $scope.profile.displayName,
+                            teeShirtSize: $scope.profile.teeShirtSize
+                        };
+
+                        $log.info($scope.messages + JSON.stringify(resp.result));
+                    }
                 });
+            });
         };
     })
 ;
@@ -209,30 +209,30 @@ conferenceApp.controllers.controller('CreateConferenceCtrl',
 
             $scope.loading = true;
             gapi.client.conference.createConference($scope.conference).
-                execute(function (resp) {
-                    $scope.$apply(function () {
-                        $scope.loading = false;
-                        if (resp.error) {
-                            // The request has failed.
-                            var errorMessage = resp.error.message || '';
-                            $scope.messages = 'Failed to create a conference : ' + errorMessage;
-                            $scope.alertStatus = 'warning';
-                            $log.error($scope.messages + ' Conference : ' + JSON.stringify($scope.conference));
+            execute(function (resp) {
+                $scope.$apply(function () {
+                    $scope.loading = false;
+                    if (resp.error) {
+                        // The request has failed.
+                        var errorMessage = resp.error.message || '';
+                        $scope.messages = 'Failed to create a conference : ' + errorMessage;
+                        $scope.alertStatus = 'warning';
+                        $log.error($scope.messages + ' Conference : ' + JSON.stringify($scope.conference));
 
-                            if (resp.code && resp.code == HTTP_ERRORS.UNAUTHORIZED) {
-                                oauth2Provider.showLoginModal();
-                                return;
-                            }
-                        } else {
-                            // The request has succeeded.
-                            $scope.messages = 'The conference has been created : ' + resp.result.name;
-                            $scope.alertStatus = 'success';
-                            $scope.submitted = false;
-                            $scope.conference = {};
-                            $log.info($scope.messages + ' : ' + JSON.stringify(resp.result));
+                        if (resp.code && resp.code == HTTP_ERRORS.UNAUTHORIZED) {
+                            oauth2Provider.showLoginModal();
+                            return;
                         }
-                    });
+                    } else {
+                        // The request has succeeded.
+                        $scope.messages = 'The conference has been created : ' + resp.result.name;
+                        $scope.alertStatus = 'success';
+                        $scope.submitted = false;
+                        $scope.conference = {};
+                        $log.info($scope.messages + ' : ' + JSON.stringify(resp.result));
+                    }
                 });
+            });
         };
     });
 
@@ -436,30 +436,30 @@ conferenceApp.controllers.controller('ShowConferenceCtrl', function ($scope, $lo
         }
         $scope.loading = true;
         gapi.client.conference.queryConferences(sendFilters).
-            execute(function (resp) {
-                $scope.$apply(function () {
-                    $scope.loading = false;
-                    if (resp.error) {
-                        // The request has failed.
-                        var errorMessage = resp.error.message || '';
-                        $scope.messages = 'Failed to query conferences : ' + errorMessage;
-                        $scope.alertStatus = 'warning';
-                        $log.error($scope.messages + ' filters : ' + JSON.stringify(sendFilters));
-                    } else {
-                        // The request has succeeded.
-                        $scope.submitted = false;
-                        $scope.messages = 'Query succeeded : ' + JSON.stringify(sendFilters);
-                        $scope.alertStatus = 'success';
-                        $log.info($scope.messages);
+        execute(function (resp) {
+            $scope.$apply(function () {
+                $scope.loading = false;
+                if (resp.error) {
+                    // The request has failed.
+                    var errorMessage = resp.error.message || '';
+                    $scope.messages = 'Failed to query conferences : ' + errorMessage;
+                    $scope.alertStatus = 'warning';
+                    $log.error($scope.messages + ' filters : ' + JSON.stringify(sendFilters));
+                } else {
+                    // The request has succeeded.
+                    $scope.submitted = false;
+                    $scope.messages = 'Query succeeded : ' + JSON.stringify(sendFilters);
+                    $scope.alertStatus = 'success';
+                    $log.info($scope.messages);
 
-                        $scope.conferences = [];
-                        angular.forEach(resp.items, function (conference) {
-                            $scope.conferences.push(conference);
-                        });
-                    }
-                    $scope.submitted = true;
-                });
+                    $scope.conferences = [];
+                    angular.forEach(resp.items, function (conference) {
+                        $scope.conferences.push(conference);
+                    });
+                }
+                $scope.submitted = true;
             });
+        });
     }
 
     /**
@@ -468,35 +468,35 @@ conferenceApp.controllers.controller('ShowConferenceCtrl', function ($scope, $lo
     $scope.getConferencesCreated = function () {
         $scope.loading = true;
         gapi.client.conference.getConferencesCreated().
-            execute(function (resp) {
-                $scope.$apply(function () {
-                    $scope.loading = false;
-                    if (resp.error) {
-                        // The request has failed.
-                        var errorMessage = resp.error.message || '';
-                        $scope.messages = 'Failed to query the conferences created : ' + errorMessage;
-                        $scope.alertStatus = 'warning';
-                        $log.error($scope.messages);
+        execute(function (resp) {
+            $scope.$apply(function () {
+                $scope.loading = false;
+                if (resp.error) {
+                    // The request has failed.
+                    var errorMessage = resp.error.message || '';
+                    $scope.messages = 'Failed to query the conferences created : ' + errorMessage;
+                    $scope.alertStatus = 'warning';
+                    $log.error($scope.messages);
 
-                        if (resp.code && resp.code == HTTP_ERRORS.UNAUTHORIZED) {
-                            oauth2Provider.showLoginModal();
-                            return;
-                        }
-                    } else {
-                        // The request has succeeded.
-                        $scope.submitted = false;
-                        $scope.messages = 'Query succeeded : Conferences you have created';
-                        $scope.alertStatus = 'success';
-                        $log.info($scope.messages);
-
-                        $scope.conferences = [];
-                        angular.forEach(resp.items, function (conference) {
-                            $scope.conferences.push(conference);
-                        });
+                    if (resp.code && resp.code == HTTP_ERRORS.UNAUTHORIZED) {
+                        oauth2Provider.showLoginModal();
+                        return;
                     }
-                    $scope.submitted = true;
-                });
+                } else {
+                    // The request has succeeded.
+                    $scope.submitted = false;
+                    $scope.messages = 'Query succeeded : Conferences you have created';
+                    $scope.alertStatus = 'success';
+                    $log.info($scope.messages);
+
+                    $scope.conferences = [];
+                    angular.forEach(resp.items, function (conference) {
+                        $scope.conferences.push(conference);
+                    });
+                }
+                $scope.submitted = true;
             });
+        });
     };
 
     /**
@@ -506,30 +506,30 @@ conferenceApp.controllers.controller('ShowConferenceCtrl', function ($scope, $lo
     $scope.getConferencesAttend = function () {
         $scope.loading = true;
         gapi.client.conference.getConferencesToAttend().
-            execute(function (resp) {
-                $scope.$apply(function () {
-                    if (resp.error) {
-                        // The request has failed.
-                        var errorMessage = resp.error.message || '';
-                        $scope.messages = 'Failed to query the conferences to attend : ' + errorMessage;
-                        $scope.alertStatus = 'warning';
-                        $log.error($scope.messages);
+        execute(function (resp) {
+            $scope.$apply(function () {
+                if (resp.error) {
+                    // The request has failed.
+                    var errorMessage = resp.error.message || '';
+                    $scope.messages = 'Failed to query the conferences to attend : ' + errorMessage;
+                    $scope.alertStatus = 'warning';
+                    $log.error($scope.messages);
 
-                        if (resp.code && resp.code == HTTP_ERRORS.UNAUTHORIZED) {
-                            oauth2Provider.showLoginModal();
-                            return;
-                        }
-                    } else {
-                        // The request has succeeded.
-                        $scope.conferences = resp.result.items;
-                        $scope.loading = false;
-                        $scope.messages = 'Query succeeded : Conferences you will attend (or you have attended)';
-                        $scope.alertStatus = 'success';
-                        $log.info($scope.messages);
+                    if (resp.code && resp.code == HTTP_ERRORS.UNAUTHORIZED) {
+                        oauth2Provider.showLoginModal();
+                        return;
                     }
-                    $scope.submitted = true;
-                });
+                } else {
+                    // The request has succeeded.
+                    $scope.conferences = resp.result.items;
+                    $scope.loading = false;
+                    $scope.messages = 'Query succeeded : Conferences you will attend (or you have attended)';
+                    $scope.alertStatus = 'success';
+                    $log.info($scope.messages);
+                }
+                $scope.submitted = true;
             });
+        });
     };
 });
 
@@ -826,6 +826,6 @@ conferenceApp.controllers.controller('DatepickerCtrl', function ($scope) {
         'starting-day': 1
     };
 
-    $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
+    $scope.formats = ['dd-MMMM-yyyy hh:mm', 'yyyy/MM/dd', 'shortDate'];
     $scope.format = $scope.formats[0];
 });
